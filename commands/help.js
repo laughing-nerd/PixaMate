@@ -1,6 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 
 module.exports = {
+	dev: false,
 	data: {
 		name: "help",
 		description: "Help command"
