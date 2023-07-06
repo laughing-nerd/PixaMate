@@ -40,7 +40,7 @@ module.exports = {
 
 				const response = await axios.request(api_options);
 				if (response.data.openai.status == 'fail')
-					interaction.followUp("Oops! 😬 Sorry, but I can't show you the requested image. There's some sensitive data in there");
+					interaction.editReply({ content: "Oops! 😬 Sorry, but I can't show you the requested image. There's some sensitive data in there", embeds: [] });
 				else {
 
 					const image_url = response.data.openai.items[0].image_resource_url;
@@ -51,8 +51,9 @@ module.exports = {
 						const embed = new EmbedBuilder().setColor(randomColor).setDescription(`You asked for: ${api_options.data.text}`).setImage(image_url);
 						await interaction.followUp({ embeds: [embed] });
 					}
-					client.create_queue.shift();
 				}
+				client.create_queue.shift();
+
 			}
 			else return;
 
