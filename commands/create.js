@@ -13,7 +13,7 @@ module.exports = {
 				description: "Describe what you want me to create",
 				required: true,
 				type: ApplicationCommandOptionType.String
-			}
+			},
 		]
 	},
 	execute: async (interaction, client) => {
@@ -27,7 +27,7 @@ module.exports = {
 					authorization: `Authorization: Bearer ${process.env.API_TOKEN}`
 				},
 				data: {
-					providers: 'deepai',
+					providers: 'openai',
 					text: prompt,
 					resolution: '512x512',
 				}
@@ -39,18 +39,22 @@ module.exports = {
 				interaction.reply({ content: "**Creating an image. Please wait...**", embeds: [embed1] });
 
 				const response = await axios.request(api_options);
-				const image_url = response.data.deepai.items[0].image_resource_url;
-				if (image_url) {
-					interaction.editReply({ content: "Done!", embeds: [] });
-					let randomColor = Math.floor(Math.random() * 16777215).toString(16);
-					randomColor = randomColor.padEnd(6, '0');
-					const embed = new EmbedBuilder().setColor(randomColor).setDescription(`You asked for: ${api_options.data.text}`).setImage(image_url);
-					await interaction.followUp({ embeds: [embed] });
+				if (response.data.openai.status == 'fail')
+					interaction.followUp("Oops! 😬 Sorry, but I can't show you the requested image. There's some sensitive data in there");
+				else {
+
+					const image_url = response.data.openai.items[0].image_resource_url;
+					if (image_url) {
+						interaction.editReply({ content: "Done!", embeds: [] });
+						let randomColor = Math.floor(Math.random() * 16777215).toString(16);
+						randomColor = randomColor.padEnd(6, '0');
+						const embed = new EmbedBuilder().setColor(randomColor).setDescription(`You asked for: ${api_options.data.text}`).setImage(image_url);
+						await interaction.followUp({ embeds: [embed] });
+					}
+					client.create_queue.shift();
 				}
-				client.create_queue.shift();
 			}
 			else return;
-
 
 		} catch (error) {
 			console.log(error);

@@ -32,7 +32,7 @@ client.on("interactionCreate", async(interaction)=>{
 	try{
 		if(command_to_exec.dev)
 		{
-			if(interaction.user.id === '812753087545737218')
+			if(interaction.user.id === '812753087545737217')
 				await command_to_exec.execute(interaction, client);
 			else
 				interaction.reply({ content: "Sorry, but this command is under development. It will be available soon" });
